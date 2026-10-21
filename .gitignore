@@ -1,0 +1,12 @@
+# Obsidian dynamic workspace and session state
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/graph.json
+
+# Operating system metadata
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Antigravity/Editor scratch
+scratch/

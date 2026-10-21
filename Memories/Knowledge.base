@@ -1,0 +1,27 @@
+filters:
+  and:
+    - file.inFolder("Memories")
+    - file.ext == "md"
+    - file.hasTag("memory")
+views:
+  - type: table
+    name: All Memories
+    order:
+      - file.name
+      - collections
+      - created
+      - sources
+      - related
+      - up
+      - tags
+  - type: table
+    name: By Collection
+    groupBy:
+      property: collections
+      direction: ASC
+    order:
+      - file.name
+      - created
+      - sources
+      - related
+      - tags

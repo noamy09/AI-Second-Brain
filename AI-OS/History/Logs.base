@@ -1,0 +1,24 @@
+filters:
+  and:
+    - file.inFolder("AI-OS/History")
+    - file.hasTag("log")
+views:
+  - type: table
+    name: Activity Ledger
+    order:
+      - file.name
+      - created
+      - agent
+      - time_window
+      - related
+      - tags
+  - type: table
+    name: By Acting Agent
+    groupBy:
+      property: agent
+      direction: ASC
+    order:
+      - file.name
+      - created
+      - time_window
+      - related

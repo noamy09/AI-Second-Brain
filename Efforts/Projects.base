@@ -1,0 +1,31 @@
+filters:
+  and:
+    - file.inFolder("Efforts")
+    - file.hasTag("project")
+views:
+  - type: table
+    name: Active Projects
+    filters:
+      and:
+        - status == "active"
+    order:
+      - file.folder
+      - file.name
+      - status
+      - ide
+      - created
+      - repo_path
+      - related
+  - type: table
+    name: All Projects
+    groupBy:
+      property: status
+      direction: ASC
+    order:
+      - file.folder
+      - file.name
+      - status
+      - ide
+      - created
+      - repo_path
+      - related
