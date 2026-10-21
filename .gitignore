@@ -1,7 +1,5 @@
-# Obsidian dynamic workspace and session state
-.obsidian/workspace.json
-.obsidian/workspace-mobile.json
-.obsidian/graph.json
+# Obsidian settings, plugins, and cache
+.obsidian/
 
 # Operating system metadata
 Thumbs.db
