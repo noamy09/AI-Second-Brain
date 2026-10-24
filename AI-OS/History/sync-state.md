@@ -7,8 +7,8 @@ created: 2026-10-16
 collections:
   - ai-os
   - history
-last_sweep_timestamp_agy: "2026-10-16T00:00:00Z"
-last_sweep_timestamp_claude: "2026-10-16T00:00:00Z"
+last_sweep_timestamp_agy: "2026-10-24T06:50:47Z"
+last_sweep_timestamp_claude: "2026-10-24T06:50:47Z"
 last_janitor_timestamp: "2026-10-20T17:10:00Z"
 tags:
   - write
@@ -25,3 +25,4 @@ Delta-based maintenance agents automatically update their respective YAML timest
 - `2026-10-17T15:56:00Z` — `vault-janitor` (`2026-10-17T08:23:00Z -> 2026-10-17T15:56:00Z`): Created [[AI-OS/Maps/memory-map.md|memory-map]], added the "Remember" workflow to [[AI-OS/Skills/note-architect/SKILL.md|note-architect]], moved Strict Planning Mode with `Context Consulted:` verification into [[Home.md|Home]], and streamlined global `GEMINI.md` and `CLAUDE.md` to single-line native includes ([[AI-OS/History/2026-10-17 janitor-log.md|2026-10-17 janitor-log]]).
 - `2026-10-17T17:13:00Z` — `vault-janitor` (`2026-10-17T15:56:00Z -> 2026-10-17T17:13:00Z`): Post-mortem remediation of `FakestNews` session (`9f21f853-0a1d-47f7-8cc5-37d2230aab83`) — closed the unbootstrapped `.brain: None` loophole in [[Home.md|Home]] and separated baseline bootstrap from post-task continuity in [[AI-OS/Skills/project-bootstrap/SKILL.md|project-bootstrap]] ([[AI-OS/History/2026-10-17 janitor-log.md|2026-10-17 janitor-log]]).
 - `2026-10-20T17:10:00Z` — `vault-janitor` (`2026-10-17T17:13:00Z -> 2026-10-20T17:10:00Z`): Executed scheduled Delta Vault Hygiene audit, standardized H1 AI watermarks in vault-map.md and skill-map.md, verified link integrity and zero stale projects, and logged run ([[AI-OS/History/2026-10-20 janitor-log.md|2026-10-20 janitor-log]]).
+- `2026-10-24T06:50:47Z` — `transcript-sweeper` (`2026-10-16T00:00:00Z -> 2026-10-24T06:50:47Z`): Swept 20 Antigravity delta sessions and 0 Claude Code delta sessions; verified `FakestNews` and vault skills are up to date; upgraded `sanitize_transcripts.py` and `setup_antigravity.py` for static 0-arg `unsandboxed(...)` execution ([[AI-OS/History/2026-10-24 sweep-log.md|2026-10-24 sweep-log]]).

@@ -93,6 +93,7 @@ python AI-OS/Skills/scripts/setup_antigravity.py
 1. Registers `AI-OS/Skills/` in `~/.gemini/config/skills.json` for dynamic 1-hop skill discovery.
 2. Points global `~/.gemini/config/GEMINI.md` directly to `<Vault-Root>/Home.md` via native include directive (`@[Home.md](...)`).
 3. Ensures vault-root `GEMINI.md` includes `@[Home.md](Home.md)` for 0-call atomic auto-expansion.
+4. Resolves your real local Python interpreter path (bypassing Windows Store `WindowsApps` execution aliases) in `AI-OS/Skills/transcript-sweeper/SKILL.md`.
 
 #### For Claude Code
 Open a terminal in the vault root and execute:
@@ -137,6 +138,33 @@ echo -e "\n.brain\n.brain/" >> "<repo_path>/.gitignore"
 # 2. Create the symbolic link
 ln -s "<vault_root>/Efforts/<Project-Name>" "<repo_path>/.brain"
 ```
+
+---
+
+### Step 5 (Optional): Vault Maintenance — On-Demand vs. Scheduled Automations
+
+The Second Brain includes two maintenance skills—`transcript-sweeper` (continuity sweeping across IDE transcripts) and `vault-janitor` (link, frontmatter, and map hygiene audits). You can trigger them **on-demand** whenever you want, or configure them as **scheduled automations**.
+
+#### Option A: Run On-Demand (Prompt When Wanted)
+Simply ask your agent in chat whenever you want a sweep or audit:
+- **Continuity Sweep:** *"Run `transcript-sweeper` to check for unlogged session updates."*
+- **Vault Hygiene Audit:** *"Run `vault-janitor` to audit vault links and frontmatter."*
+
+#### Option B: Scheduled Background Automations (Google Antigravity)
+If you prefer these skills to run unattended on a schedule, run `/automation` in Antigravity chat (or open the **Automations** panel) to create them:
+
+1. **Vault Hygiene Audit (`vault-janitor`):**
+   - **Workspace:** `<Vault-Root>`
+   - **Required Access Grants:** `read_file(<Vault-Root>)`, `write_file(<Vault-Root>)`
+2. **Daily Transcript Sweeper (`transcript-sweeper`):**
+   - **Workspace:** `<Vault-Root>`
+   - **Required Access Grants:**
+     - `read_file(<Vault-Root>)`, `write_file(<Vault-Root>)`
+     - `read_file(<User-Home>/.gemini/antigravity/brain)`
+     - `read_file(<User-Home>/.claude/projects)`
+     - `unsandboxed(<Python-Posix-Path> -X utf8 AI-OS/Skills/transcript-sweeper/scripts/sanitize_transcripts.py)`
+   > [!NOTE]
+   > Because Windows AppContainer sandboxing isolates sibling conversation folders in `~/.gemini/antigravity/brain/` and Antigravity's `unsandboxed(...)` rule requires an exact 1:1 full-string match (no `*` wildcards), `sanitize_transcripts.py` reads watermarks directly from `AI-OS/History/sync-state.md` with zero CLI arguments so the command string stays static across scheduled runs.
 
 ---
 

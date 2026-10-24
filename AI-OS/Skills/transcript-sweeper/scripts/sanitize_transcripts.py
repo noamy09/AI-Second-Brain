@@ -28,7 +28,8 @@ if sys.stdout and hasattr(sys.stdout, "reconfigure"):
 if sys.stderr and hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8")
 
-VAULT_ROOT_LOWER = Path(__file__).resolve().parents[4].as_posix().lower()
+VAULT_ROOT = Path(__file__).resolve().parents[4]
+VAULT_ROOT_LOWER = VAULT_ROOT.as_posix().lower()
 
 INJECTION_PATTERNS = [
     re.compile(r"<\s*/?\s*(USER_REQUEST|SYSTEM_MESSAGE|ADDITIONAL_METADATA|RULE|identity|guidelines)[^>]*>", re.I),
@@ -47,6 +48,8 @@ DOC_TOOLS = {
 
 WRITE_TOOLS = {
     "write_to_file",
+    "write_file",
+    "edit_file",
     "replace_file_content",
     "multi_replace_file_content",
     "Write",
@@ -158,6 +161,7 @@ def parse_agy_transcript(jsonl_path: Path, session_id: str, max_doc_chars: int) 
                     if t_name in WRITE_TOOLS:
                         target = unwrap_arg(
                             t_args.get("TargetFile")
+                            or t_args.get("Path")
                             or t_args.get("file_path")
                             or t_args.get("path")
                         )
@@ -176,8 +180,13 @@ def parse_agy_transcript(jsonl_path: Path, session_id: str, max_doc_chars: int) 
                             or t_args.get("query")
                         )
                         pending_tool_queue.append((t_name, src, True))
-                    elif t_name in {"view_file", "Read"}:
-                        abs_path = unwrap_arg(t_args.get("AbsolutePath") or t_args.get("file_path"))
+                    elif t_name in {"view_file", "read_file", "Read"}:
+                        abs_path = unwrap_arg(
+                            t_args.get("AbsolutePath")
+                            or t_args.get("Path")
+                            or t_args.get("file_path")
+                            or t_args.get("path")
+                        )
                         pending_tool_queue.append((t_name, abs_path, is_external_doc_path(abs_path)))
                     else:
                         pending_tool_queue.append((t_name, "", False))
@@ -284,16 +293,31 @@ def parse_claude_transcript(jsonl_path: Path, max_doc_chars: int) -> dict[str, A
     }
 
 
+def load_sync_state_watermarks() -> tuple[str, str]:
+    sync_file = VAULT_ROOT / "AI-OS" / "History" / "sync-state.md"
+    agy_ts, claude_ts = "1970-01-01T00:00:00Z", "1970-01-01T00:00:00Z"
+    if sync_file.exists():
+        text = sync_file.read_text(encoding="utf-8", errors="replace")
+        m_agy = re.search(r'last_sweep_timestamp_agy:\s*"?([^"\s\n]+)"?', text)
+        m_claude = re.search(r'last_sweep_timestamp_claude:\s*"?([^"\s\n]+)"?', text)
+        if m_agy:
+            agy_ts = m_agy.group(1)
+        if m_claude:
+            claude_ts = m_claude.group(1)
+    return agy_ts, claude_ts
+
+
 def main() -> None:
+    default_agy, default_claude = load_sync_state_watermarks()
     parser = argparse.ArgumentParser(description="Sanitize IDE JSONL transcripts across a delta window.")
-    parser.add_argument("--since", default="1970-01-01T00:00:00Z", help="Default ISO UTC watermark.")
+    parser.add_argument("--since", default=None, help="Fallback ISO UTC watermark override.")
     parser.add_argument("--since-agy", default=None, help="Antigravity ISO UTC watermark override.")
     parser.add_argument("--since-claude", default=None, help="Claude Code ISO UTC watermark override.")
     parser.add_argument("--max-doc-chars", type=int, default=1200, help="Max chars per passive doc reference.")
     args = parser.parse_args()
 
-    since_agy = parse_iso_utc(args.since_agy or args.since)
-    since_claude = parse_iso_utc(args.since_claude or args.since)
+    since_agy = parse_iso_utc(args.since_agy or args.since or default_agy)
+    since_claude = parse_iso_utc(args.since_claude or args.since or default_claude)
     now_utc = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     sessions: list[dict[str, Any]] = []
